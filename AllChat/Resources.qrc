@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/chpositive.png</file>
+        <file>images/team.png</file>
+        <file>images/no_image.png</file>
+    </qresource>
+</RCC>
