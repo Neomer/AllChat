@@ -16,7 +16,7 @@ void CErrorProcessor::setLogDetails(quint8 level)
 
 void CErrorProcessor::log(QString title, QString file, int line, QString funcInfo, QString msg)
 {
-	qDebug(QString("[%5] %6\n\tFUNC: %1\n\tFILE: %3 line %2\n\tMSG: %4").arg(
+	qDebug(QString("[%5] %6\n\tFUNC: %1\n\tFILE: %3 line %2\n\tMSG: %4\n").arg(
 					funcInfo,
 					QString::number(line),
 					file,
