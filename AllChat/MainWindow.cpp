@@ -50,6 +50,8 @@ void MainWindow::enterRoom(quint32 id, SChatProtoRoomInfo pkg)
 		return;
 	}
 
+	mDebug(tr("Coming room..."));
+
 	WidgetRoom * room = new WidgetRoom(__uinfo, pkg, __processor, this);
 
 	__rooms[pkg.id] = room;

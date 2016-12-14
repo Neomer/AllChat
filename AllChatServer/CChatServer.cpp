@@ -49,6 +49,9 @@ void CChatServer::connectionEstablished()
 
 	connect(client, SIGNAL(userFindRoom(CChatClient*,SChatProtoRoomFind,quint32)),
 			this, SLOT(clientFindRoom(CChatClient*,SChatProtoRoomFind,quint32)));
+
+	connect(client, SIGNAL(userJoinRoom(CChatClient*,SChatProtoRoomIn,quint32)),
+			this, SLOT(clientJoinRoom(CChatClient*,SChatProtoRoomIn,quint32)));
 }
 
 void CChatServer::connectionRefused(QAbstractSocket::SocketError error)

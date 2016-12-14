@@ -47,9 +47,16 @@ void WidgetCreateRoom::roomCreationResult(quint32 id, SChatProtoRoomInfo package
 
 	if (package.id != PROTOCOL_AUTHORIZATION_FAILED)
 	{
+		mDebug(tr("Room creation SUCCESS!"));
+
 		SChatProtoRoomIn ri;
 		ri.id = package.id;
 
 		__processor->saveID("MainWindow", __processor->send(&ri, sizeof(SChatProtoRoomIn), PHT_RoomIn));
+	}
+	else
+	{
+		mWarning(tr("Room creation FAILED!"));
+		return;
 	}
 }
