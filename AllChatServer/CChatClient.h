@@ -16,7 +16,7 @@ class CChatClient : public QTcpSocket
 
 	public:
 		CChatClient(QTcpSocket * socket, CDatabase * db);
-		void sendMessage(SChatProtoMessage message);
+		void sendMessage(SChatProtoMessage message, quint32 id = -1);
 		void sendRoomInfo(SChatProtoRoomInfo message, quint32 id = -1);
 
 		quint32 userId();

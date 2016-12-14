@@ -18,13 +18,17 @@ void CChatRoom::addUser(CChatClient *user)
 			   this->name()));
 }
 
-void CChatRoom::sendMessage(SChatProtoMessage message)
+void CChatRoom::sendMessage(SChatProtoMessage message, quint32 id)
 {
 	mDebug(tr("Send message"));
 
 	foreach (CChatClient * client, __users)
 	{
-		client->sendMessage(message);
+		mDebug(tr("Sending message to [%1] %2").arg(
+				   QString::number(client->userId()),
+				   client->nickname()));
+
+		client->sendMessage(message, id);
 	}
 }
 

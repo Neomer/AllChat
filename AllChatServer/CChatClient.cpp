@@ -36,9 +36,15 @@ CChatClient::CChatClient(QTcpSocket *socket, CDatabase *db) :
 
 }
 
-void CChatClient::sendMessage(SChatProtoMessage message)
+void CChatClient::sendMessage(SChatProtoMessage message, quint32 id)
 {
+	QByteArray tmp((const char *)&message, sizeof(SChatProtoMessage));
+	if (message.messageLength > 0)
+	{
+		tmp.append(message.message, message.messageLength);
+	}
 
+	__processor->send(tmp, PHT_Message, id);
 }
 
 void CChatClient::sendRoomInfo(SChatProtoRoomInfo message, quint32 id)

@@ -37,17 +37,29 @@ void WidgetRoom::printMessage(QString writer, QString text, WidgetRoom::MessageT
 
 void WidgetRoom::sendMessageClicked()
 {
+	ui->txtMessage->setEnabled(false);
+
+	SChatProtoMessage msg;
+
+	msg.room_id = __info.id;
+	msg.writer_id = __uinfo.id;
+	strcpy(msg.writer_name, __uinfo.username);
+	msg.messageLength = ui->txtMessage->text().length();
+
+	QByteArray tmp((const char *)&msg, sizeof(SChatProtoMessage));
+	if (msg.messageLength > 0)
+	{
+		tmp.append(ui->txtMessage->text().toLatin1().constData(), ui->txtMessage->text().length());
+	}
+
+	__processor->send(tmp, PHT_Message);
+
 	ui->txtMessage->setText(QString());
+	ui->txtMessage->setEnabled(true);
 }
 
 void WidgetRoom::messageReceived(quint32 id, SChatProtoMessage msg)
 {
-	if (!__processor->checkID("WidgetRoom", id))
-	{
-		mDebug(tr("Skip..."));
-		return;
-	}
-
 	if (msg.room_id != __info.id)
 	{
 		mDebug(tr("Skip... (%1)").arg(

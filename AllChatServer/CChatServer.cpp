@@ -65,7 +65,7 @@ void CChatServer::echoClientMessage(CChatClient *client, SChatProtoMessage messa
 
 	if (room->containsUser(client->userId()))
 	{
-		room->sendMessage(message);
+		room->sendMessage(message, id);
 	}
 	else
 	{
