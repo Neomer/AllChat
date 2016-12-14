@@ -6,6 +6,8 @@
 
 #include "../AllChatServer/CChatProtocol.h"
 
+#define CELL_ROLE	Qt::UserRole + 1
+
 namespace Ui {
 class WidgetFindRoom;
 }
@@ -21,6 +23,7 @@ public:
 private slots:
 	void findResult(quint32 id, SChatProtoRoomInfo msg);
 	void findClicked();
+	void roomSelected(int row, int column);
 
 private:
 	Ui::WidgetFindRoom *ui;

@@ -56,6 +56,6 @@ void MainWindow::enterRoom(quint32 id, SChatProtoRoomInfo pkg)
 
 	__rooms[pkg.id] = room;
 	ui->twChats->addTab(room, QIcon(":/images/team.png"), tr("[%1] %2").arg(
-							QString(pkg.userCount),
+							QString::number(pkg.userCount),
 							QString(pkg.name)));
 }

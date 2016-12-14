@@ -119,9 +119,20 @@ void CChatServer::clientJoinRoom(CChatClient *client, SChatProtoRoomIn message, 
 	ri.id = message.id;
 	strcpy(ri.name, res->value(0).toString().toLatin1().constData());
 
-	client->sendRoomInfo(ri, id);
+	CChatRoom * room = __rooms->roomById(message.id);
+	if (!room)
+	{
+		room = __rooms->registerRoom(id);
 
-	__rooms->roomById(message.id)->addUser(client);
+		if (!room)
+		{
+			mDebug("Room creation failed!");
+			return;
+		}
+	}
+	room->addUser(client);
+
+	client->sendRoomInfo(ri, id);
 }
 
 void CChatServer::clientFindRoom(CChatClient *client, SChatProtoRoomFind message, quint32 id)

@@ -16,6 +16,7 @@ public:
 	explicit CRoomCollection(CDatabase * db, QObject *parent = 0);
 
 	void registerRoom(CChatRoom * room);
+	CChatRoom * registerRoom(quint32 id);
 	CChatRoom * roomById(quint32 id);
 
 	QList<CChatRoom *> find(SChatProtoRoomFind params);

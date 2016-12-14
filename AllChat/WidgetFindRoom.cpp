@@ -15,6 +15,9 @@ WidgetFindRoom::WidgetFindRoom(CChatProtocol *processor, QWidget *parent) :
 	connect(ui->cmdFind, SIGNAL(clicked(bool)),
 			this, SLOT(findClicked()));
 
+	connect(ui->twResult, SIGNAL(cellDoubleClicked(int,int)),
+			this, SLOT(roomSelected(int,int)));
+
 	__row = 0;
 
 }
@@ -37,8 +40,14 @@ void WidgetFindRoom::findResult(quint32 id, SChatProtoRoomInfo msg)
 			   QString(msg.name)));
 
 	ui->twResult->setRowCount(__row + 1);
-	ui->twResult->setItem(__row, 0, new QTableWidgetItem(QString::number(msg.id)));
-	ui->twResult->setItem(__row, 1, new QTableWidgetItem(QString(msg.name)));
+	QTableWidgetItem * twi = new QTableWidgetItem(QString::number(msg.id));
+	twi->setData(CELL_ROLE, QVariant::fromValue(msg.id));
+	ui->twResult->setItem(__row, 0, twi);
+
+	twi = new QTableWidgetItem(msg.name);
+	twi->setData(CELL_ROLE, QVariant::fromValue(msg.id));
+	ui->twResult->setItem(__row, 1, twi);
+
 	__row++;
 }
 
@@ -55,4 +64,17 @@ void WidgetFindRoom::findClicked()
 	tmp.append(ui->txtName->text().toLatin1());
 
 	__processor->saveID("WidgetFindRoom", __processor->send(tmp, PHT_RoomFind));
+}
+
+void WidgetFindRoom::roomSelected(int row, int column)
+{
+	quint32 id = ui->twResult->item(row, column)->data(CELL_ROLE).toUInt();
+
+	mDebug(tr("Enter into room %1").arg(
+			   QString::number(id)));
+
+	SChatProtoRoomIn ri;
+	ri.id = id;
+
+	__processor->saveID("MainWindow", __processor->send(&ri, sizeof(SChatProtoRoomIn), PHT_RoomIn));
 }

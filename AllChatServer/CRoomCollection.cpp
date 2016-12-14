@@ -11,6 +11,34 @@ void CRoomCollection::registerRoom(CChatRoom *room)
 		__rooms.append(room);
 }
 
+CChatRoom *CRoomCollection::registerRoom(quint32 id)
+{
+	CDatabaseResult * res = __db->execute(QString("select * from room where id=%1;").arg(
+											  QString::number(id)));
+
+	if (!res->isValid())
+	{
+		mDebug("Database error!");
+		return 0;
+	}
+
+	if (res->isEmpty())
+	{
+		mDebug(tr("Room ID: %1 mot found!").arg(
+				   QString::number(id)));
+		return 0;
+	}
+
+	SChatProtoRoomInfo ri;
+
+	ri.id = id;
+	strcpy(ri.name, res->value("name").toString().toLatin1().constData());
+	ri.filterLength = 0;
+	ri.userCount = 0;
+
+	return new CChatRoom(ri, this);
+}
+
 CChatRoom *CRoomCollection::roomById(quint32 id)
 {
 	foreach (CChatRoom * room, __rooms)
