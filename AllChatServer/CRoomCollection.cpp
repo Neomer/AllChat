@@ -81,9 +81,13 @@ QList<CChatRoom *> CRoomCollection::find(SChatProtoRoomFind params)
 			ri.id = r->value("id").toString().toInt();
 			strcpy(ri.name , r->value("name").toString().toLatin1().constData());
 			ri.userCount = 0;
-			ri.filter = new char[r->value("filter").toString().length() + 1];
-			ri.filter[r->value("filter").toString().length()]= 0;
-			strcpy(ri.filter , r->value("filter").toString().toLatin1().constData());
+			ri.filterLength = r->value("filter").toString().length();
+			if (ri.filterLength > 0)
+			{
+				ri.filter = new char[r->value("filter").toString().length() + 1];
+				ri.filter[r->value("filter").toString().length()]= 0;
+				strcpy(ri.filter , r->value("filter").toString().toLatin1().constData());
+			}
 
 			CChatRoom * room = new CChatRoom(ri, this);
 			ret.append(room);

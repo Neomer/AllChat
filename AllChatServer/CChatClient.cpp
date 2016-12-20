@@ -49,15 +49,23 @@ void CChatClient::sendMessage(SChatProtoMessage message, quint32 id)
 
 void CChatClient::sendRoomInfo(SChatProtoRoomInfo message, quint32 id)
 {
-	mDebug(tr("Send roon info:\n\tID: %1\n\tName: %2").arg(
+	mDebug(tr("Send room info:\n\tID: %1\n\tName: %2").arg(
 			   QString::number(message.id),
 			   message.name));
 
 	QByteArray tmp((const char *)&message, sizeof(SChatProtoRoomInfo));
+
+	mDebug(tr("Buffer %1 Filter: %2").arg(
+			   QString::number(tmp.length()),
+			   QString::number(message.filterLength)));
+
 	if (message.filterLength > 0)
 	{
 		tmp.append(message.filter, message.filterLength);
 	}
+
+	mDebug(tr("Buffer %1").arg(
+			   QString::number(tmp.length())));
 
 	__processor->send(tmp, PHT_RoomInfo, id);
 }

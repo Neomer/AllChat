@@ -104,10 +104,11 @@ quint32 CChatProtocol::send(QByteArray data, SChatProtoHeaderType type, int id)
 	QByteArray ret((const char *) &hdr, sizeof(SChatProtoHeader));
 	ret = ret.append(data);
 
-	mDebug(tr("Send data\n\tID: %1\n\tTYPE: %2\n\tLength: %3").arg(
+	mDebug(tr("Send data\n\tID: %1\n\tTYPE: %2\n\tLength: %3\n\tBuffer: %4").arg(
 			   QString::number(hdr.id),
 			   QString::number(hdr.type),
-			   QString::number(hdr.length)));
+			   QString::number(hdr.length),
+			   QString::number(ret.length())));
 
 	__socket->write(ret);
 
