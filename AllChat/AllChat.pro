@@ -44,7 +44,11 @@ FORMS    += MainWindow.ui \
     WidgetRoom.ui \
     WidgetFindRoom.ui
 
-LIBS += $$PWD/pgre/libpq.lib
+CONFIG(unix): {
+    LIBS += -L/usr/lib -lpq
+} else {
+    LIBS += $$PWD/pgre/libpq.lib
+}
 
 RESOURCES += \
     Resources.qrc

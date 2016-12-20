@@ -22,7 +22,7 @@ public:
 	~MainWindow();
 
 public slots:
-	saveUserInfo(SChatProtoUserInfo info);
+	void saveUserInfo(SChatProtoUserInfo info);
 
 private slots:
 	void enterRoom(quint32 id, SChatProtoRoomInfo pkg);
