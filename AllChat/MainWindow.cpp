@@ -31,7 +31,7 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
-MainWindow::saveUserInfo(SChatProtoUserInfo info)
+void MainWindow::saveUserInfo(SChatProtoUserInfo info)
 {
 	__uinfo = info;
 }
