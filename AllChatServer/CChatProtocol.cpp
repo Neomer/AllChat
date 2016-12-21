@@ -344,6 +344,12 @@ bool CChatProtocol::parseMessage(quint32 id)
 	SChatProtoMessage msg;
 	memcpy(&msg, __buffer.constData() + sizeof(SChatProtoHeader), sizeof(SChatProtoMessage));
 
+	quint32 idx = sizeof(SChatProtoHeader) + sizeof(SChatProtoMessage);
+
+	msg.message = new char[msg.messageLength + 1];
+	msg.message[msg.messageLength] = 0;
+	memcpy(msg.message, __buffer.constData() + idx, msg.messageLength);
+
 	emit receivePackageMessage(id, msg);
 
 	return true;

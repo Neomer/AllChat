@@ -21,6 +21,7 @@ public:
 	SChatProtoRoomInfo info()	{ return __info; }
 
 	void addUser(CChatClient * user);
+	void removeUser(CChatClient * user);
 	void sendMessage(SChatProtoMessage message, quint32 id = -1);
 	bool containsUser(quint32 clientID);
 

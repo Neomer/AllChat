@@ -52,16 +52,50 @@ void CChatServer::connectionEstablished()
 
 	connect(client, SIGNAL(userJoinRoom(CChatClient*,SChatProtoRoomIn,quint32)),
 			this, SLOT(clientJoinRoom(CChatClient*,SChatProtoRoomIn,quint32)));
+
+	connect(client, SIGNAL(closingConnection(QTcpSocket*)),
+			this, SLOT(connectionClosed(QTcpSocket*)));
 }
 
 void CChatServer::connectionRefused(QAbstractSocket::SocketError error)
 {
-	mDebug(QString::number(error));
+	mDebug(tr("Connection refused: %1").arg(QString::number(error)));
+}
+
+void CChatServer::connectionClosed(QTcpSocket *socket)
+{
+	CChatClient * client = qobject_cast<CChatClient *>(QObject::sender());
+
+	if (!socket)
+	{
+		mWarning(tr("Signal sender null"));
+		return;
+	}
+
+	foreach (CChatRoom * r, client->__rooms)
+	{
+		r->removeUser(client);
+	}
+
+	mDebug(tr("Connection closed. Client ID [%1]").arg(
+			   QString::number(client->userId())));
 }
 
 void CChatServer::echoClientMessage(CChatClient *client, SChatProtoMessage message, quint32 id)
 {
+	mDebug(tr("Receive message\n\tRoom: %1\n\tWriter: [%2] %3\n\tMessage: %4").arg(
+			   QString::number(message.room_id),
+			   QString::number(message.writer_id),
+			   message.writer_name,
+			   message.message));
+
 	CChatRoom * room = __rooms->roomById(message.room_id);
+
+	if (!room)
+	{
+		mWarning(tr("User tries to send message in null room!"));
+		return;
+	}
 
 	if (room->containsUser(client->userId()))
 	{
@@ -122,6 +156,7 @@ void CChatServer::clientJoinRoom(CChatClient *client, SChatProtoRoomIn message, 
 	CChatRoom * room = __rooms->roomById(message.id);
 	if (!room)
 	{
+		mDebug(tr("Room not found in memory. Creating new room..."));
 		room = __rooms->registerRoom(id);
 
 		if (!room)
@@ -131,8 +166,9 @@ void CChatServer::clientJoinRoom(CChatClient *client, SChatProtoRoomIn message, 
 		}
 	}
 	room->addUser(client);
+	client->__rooms.append(room);
 
-	client->sendRoomInfo(ri, id);
+	client->sendRoomInfo(room->info(), id);
 }
 
 void CChatServer::clientFindRoom(CChatClient *client, SChatProtoRoomFind message, quint32 id)

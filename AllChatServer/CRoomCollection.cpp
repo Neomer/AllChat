@@ -36,7 +36,10 @@ CChatRoom *CRoomCollection::registerRoom(quint32 id)
 	ri.filterLength = 0;
 	ri.userCount = 0;
 
-	return new CChatRoom(ri, this);
+	CChatRoom * ret = new CChatRoom(ri, this);
+	__rooms.append(ret);
+
+	return ret;
 }
 
 CChatRoom *CRoomCollection::roomById(quint32 id)
@@ -55,22 +58,27 @@ CChatRoom *CRoomCollection::roomById(quint32 id)
 QList<CChatRoom *> CRoomCollection::find(SChatProtoRoomFind params)
 {	
 	QList<CChatRoom *> ret;
+	QString ids;
 
 	mDebug(tr("Try to find rooms by given name %1").arg(
 			   params.name));
-	foreach (CChatRoom * room, __rooms)
-	{
-		if (room->name() == params.name)
-		{
-			ret.append(room);
-		}
-	}
+//	foreach (CChatRoom * room, __rooms)
+//	{
+//		if (room->name() == params.name)
+//		{
+//			ret.append(room);
+//			ids.append(QString("%1,").arg(QString::number(room->roomId())));
+//		}
+//	}
 
-	mDebug(tr("Found %1 room(s) by name in memory. Try to find in the base").arg(
-			   QString::number(ret.count())));
+//	mDebug(tr("Found %1 room(s) by name in memory. Try to find in the base").arg(
+//			   QString::number(ret.count())));
 
-	CDatabaseResult * r = __db->execute(QString("select * from room where name like '%1'").arg(
-											params.name));
+
+
+	CDatabaseResult * r = __db->execute(QString("select * from room where name like '%1';").arg(
+											params.name,
+											ids));
 
 	if (r->isValid())
 	{

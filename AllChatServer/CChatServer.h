@@ -26,6 +26,7 @@ class CChatServer : public QTcpServer
 	private slots:
 		void connectionEstablished();
 		void connectionRefused(QAbstractSocket::SocketError error);
+		void connectionClosed(QTcpSocket* socket);
 
 		void echoClientMessage(CChatClient * client, SChatProtoMessage message, quint32 id);
 		void createRoom(CChatClient * client, SChatProtoRoomCreate message, quint32 id);

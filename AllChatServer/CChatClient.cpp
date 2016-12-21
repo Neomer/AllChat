@@ -11,6 +11,9 @@ CChatClient::CChatClient(QTcpSocket *socket, CDatabase *db) :
 	connect(socket, SIGNAL(aboutToClose()),
 			this, SLOT(connectionClosed()));
 
+	connect(socket, SIGNAL(disconnected()),
+			this, SLOT(connectionClosed()));
+
 	connect(socket, SIGNAL(readyRead()),
 			SLOT(dataReceive()));
 
@@ -83,6 +86,8 @@ QString CChatClient::nickname()
 void CChatClient::connectionClosed()
 {
 	mDebug(tr("Connection closed!"));
+
+	emit(closingConnection(__socket));
 }
 
 void CChatClient::dataReceive()
