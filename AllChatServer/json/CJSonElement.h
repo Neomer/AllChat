@@ -8,6 +8,14 @@ class CJSonElement : public QObject
 {
 	Q_OBJECT
 public:
+	enum JsonElementType
+	{
+		JsonTypeString,
+		JsonTypeArray,
+		JsonTypeNumber,
+		JsonTypeObject
+	};
+	
 	explicit CJSonElement(QObject *parent = 0);
 
 	bool isValue() { return !isBranch(); }

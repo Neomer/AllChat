@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 	QCoreApplication::addLibraryPath("G:/Projects/build-AllChatServer-Desktop_Qt_5_7_0_MinGW_32bit-Release/release/sqldrivers");
 
 	QCoreApplication a(argc, argv);
-	CJson::instance(&a).parse(QString("{\"test\" : \"data\"}"));
+	CJson::instance(&a).parse(QString("{\"test\" : \"data\", \"test2\":    \"test3\", \"testArray\":[1, 3, 4, 5, 6],   \"testObj\": {\"subItem1\": \"subValue1\"}}"));
 
 	CErrorProcessor::instance(&a)->setLogDetails(4);
 	
