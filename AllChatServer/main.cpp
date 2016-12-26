@@ -8,6 +8,8 @@
 #include "CDatabase.h"
 #include "CErrorProcessor.h"
 
+#include "json/CJson.h"
+
 int main(int argc, char *argv[])
 {
 
@@ -16,8 +18,10 @@ int main(int argc, char *argv[])
 	QCoreApplication::addLibraryPath("G:/Projects/build-AllChatServer-Desktop_Qt_5_7_0_MinGW_32bit-Release/release/sqldrivers");
 
 	QCoreApplication a(argc, argv);
-	CErrorProcessor::instance(&a)->setLogDetails(4);
+	CJson::instance(&a).parse(QString("{\"test\" : \"data\"}"));
 
+	CErrorProcessor::instance(&a)->setLogDetails(4);
+	
 	CDatabase db(&a);
 	db.setHost("127.0.0.1");
 	db.setUser("allchat");

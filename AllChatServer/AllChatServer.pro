@@ -18,7 +18,10 @@ SOURCES += main.cpp \
     CChatRoom.cpp \
     CDatabase.cpp \
     CDatabaseResult.cpp \
-    CRoomCollection.cpp
+    CRoomCollection.cpp \
+    json/CJson.cpp \
+    json/CJSonDoc.cpp \
+    json/CJSonElement.cpp
 
 HEADERS += \
     CChatClient.h \
@@ -32,7 +35,10 @@ HEADERS += \
     CDatabaseResult.h \
     globalVars.h \
     defines.h \
-    CRoomCollection.h
+    CRoomCollection.h \
+    json/CJson.h \
+    json/CJSonDoc.h \
+    json/CJSonElement.h
 
 CONFIG(unix): {
     LIBS += -L/usr/lib -lpq
