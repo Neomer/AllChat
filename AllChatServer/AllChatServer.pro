@@ -20,8 +20,8 @@ SOURCES += main.cpp \
     CDatabaseResult.cpp \
     CRoomCollection.cpp \
     json/CJson.cpp \
-    json/CJSonDoc.cpp \
-    json/CJSonElement.cpp
+    json/CJsonDoc.cpp \
+    json/CJsonElement.cpp
 
 HEADERS += \
     CChatClient.h \
@@ -37,8 +37,8 @@ HEADERS += \
     defines.h \
     CRoomCollection.h \
     json/CJson.h \
-    json/CJSonDoc.h \
-    json/CJSonElement.h
+    json/CJsonDoc.h \
+    json/CJsonElement.h
 
 CONFIG(unix): {
     LIBS += -L/usr/lib -lpq

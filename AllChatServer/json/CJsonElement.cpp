@@ -1,11 +1,15 @@
-#include "CJSonElement.h"
+#include "CJsonElement.h"
 
-CJSonElement::CJSonElement(QObject *parent) : QObject(parent)
+CJsonElement::CJsonElement(QString key,
+						   QVariant value,
+						   JsonElementType type,
+						   QObject *parent) :
+	QObject(parent)
 {
 
 }
 
-const CJSonElement &CJSonElement::operator [](QString key)
+const CJsonElement &CJsonElement::operator [](QString key)
 {
 
 }

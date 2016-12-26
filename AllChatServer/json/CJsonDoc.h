@@ -4,30 +4,34 @@
 #include <QObject>
 #include <QMap>
 #include <QVariant>
-#include "CJSonElement.h"
+#include "CJsonElement.h"
 
 class CJson;
 
-class CJSonDoc : public QObject
+class CJsonDoc : public QObject
 {
 	Q_OBJECT
 
 	friend class CJson;
 
 public:
-	CJSonDoc(QObject *parent = 0);
-	CJSonDoc(const CJSonDoc &other);
+	CJsonDoc(QObject *parent = 0);
+	CJsonDoc(const CJsonDoc &other);
 	
-	const CJSonElement& operator [] (QString key);
-	const CJSonElement& first() { return __first; }
+	const CJsonElement& operator [] (QString key);
+	const CJsonElement& first() { return *(__elements.at(0)); }
+
+	void appendElement(CJsonElement *element);
 
 signals:
 
 public slots:
 
 private:
-	CJSonElement __first;
+	QList<CJsonElement *> __elements;
 
 };
+
+Q_DECLARE_METATYPE(CJsonDoc)
 
 #endif // CJSONDOC_H

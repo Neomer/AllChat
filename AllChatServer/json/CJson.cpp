@@ -1,33 +1,36 @@
 #include "CJson.h"
 
-CJSonDoc CJson::parse(QByteArray data)
+CJsonDoc CJson::parse(QByteArray data, int *start)
 {
-	CJSonDoc ret(this);
+	CJsonDoc ret(this);
 	ParsingState state = ParsingStateWaitingObject;
 	QString key, value;
-	CJSonElement::JsonElementType type;
+	CJsonElement::JsonElementType type;
 	int line = 1;
 	bool escape = false;
+
+	qDebug("Start parsing %s from %d",
+		   data.constData(), *start);
 
 	key.reserve(1024);
 	value.reserve(1024);
 
-	for (int i = 0; i < data.length(); i++)
+	while (*start < data.length())
 	{
 		qDebug(tr("state: %1 sym: %2").arg(
 				   QString::number((int)state),
-				   QString(data.at(i))).toLatin1().constData());
+				   QString(data.at(*start))).toLatin1().constData());
 		
-		if (data.at(i) == '\n')
+		if (data.at(*start) == '\n')
 			line++;
 
 		// Skip eskape symbols
-//		if (strchr(CJSON_ESCAPE_SYMBOLS, data.at(i)))
+//		if (strchr(CJSON_ESCAPE_SYMBOLS, data.at(*start)))
 //		{
 //			continue;
 //		}
 
-		switch (data.at(i))
+		switch (data.at(*start))
 		{
 			// Begin of JSON object.
 			case CJSON_RESERVED_BEGINOBJECT:
@@ -42,33 +45,39 @@ CJSonDoc CJson::parse(QByteArray data)
 					case ParsingStateKey:
 						if ((escape)&&(CJSON_SETTINGS_ALLOWESCAPEDKEY))
 						{
-							key += data.at(i);
+							key += data.at(*start);
 						}
 						else
 						{
-							emitParsingError(data.at(i), line);
-							return CJSonDoc();
+							emitParsingError(data.at(*start), line);
+							return CJsonDoc();
 						}
 						break;
 						
 					// Key parsed now waiting for a value separator ':'s
 					case ParsingWaitingSeparatorValue:
-						emitParsingError(data.at(i), line);
-						return CJSonDoc();
+						emitParsingError(data.at(*start), line);
+						return CJsonDoc();
 
 					// Key name parsed now waiting for value
 					case ParsingStateWaitingValue:
 						// Value is object
 						state = ParsingStateValue;
-
-						// TODO recursive! <<=						
+						// TODO recursive! <<=
+						type = CJsonElement::JsonTypeObject;
+						ret.appendElement(
+									new CJsonElement(
+										key,
+										QVariant::fromValue(parse(data, start)),
+										CJsonElement::JsonTypeObject,
+										this));
 						break;
 
 					// Value parsing process currently
 					case ParsingStateValue:
 						if (escape)
 						{
-							value += data.at(i);
+							value += data.at(*start);
 						}
 						else
 						{
@@ -78,8 +87,8 @@ CJSonDoc CJson::parse(QByteArray data)
 					
 					// Value parsed now waiting for list separator ','
 					default:
-						emitParsingError(data.at(i), line);
-						return CJSonDoc();
+						emitParsingError(data.at(*start), line);
+						return CJsonDoc();
 						
 				}
 				break;
@@ -90,24 +99,26 @@ CJSonDoc CJson::parse(QByteArray data)
 				{
 					case ParsingStateWaitingKey:
 						state = ParsingStateWaitingObject;
+						return ret;
 						break;
+
 
 					case ParsingStateKey:
 						if ((escape)&&(CJSON_SETTINGS_ALLOWESCAPEDKEY))
 						{
-							key += data.at(i);
+							key += data.at(*start);
 						}
 						else
 						{
-							emitParsingError(data.at(i), line);
-							return CJSonDoc();
+							emitParsingError(data.at(*start), line);
+							return CJsonDoc();
 						}
 						break;
 
 					case ParsingStateValue:
 						if (escape)
 						{
-							value += data.at(i);
+							value += data.at(*start);
 						}
 						else
 						{
@@ -121,11 +132,12 @@ CJSonDoc CJson::parse(QByteArray data)
 						
 					case ParsingWaitingList:
 						// Last element
+						return ret;
 						break;						
 					
 					default:
-						emitParsingError(data.at(i), line);
-						return CJSonDoc();
+						emitParsingError(data.at(*start), line);
+						return CJsonDoc();
 
 				}
 				break;
@@ -138,32 +150,32 @@ CJSonDoc CJson::parse(QByteArray data)
 					case ParsingStateKey:
 						if ((escape)&&(CJSON_SETTINGS_ALLOWESCAPEDKEY))
 						{
-							key += data.at(i);
+							key += data.at(*start);
 						}
 						else
 						{
-							emitParsingError(data.at(i), line);
-							return CJSonDoc();
+							emitParsingError(data.at(*start), line);
+							return CJsonDoc();
 						}
 						break;
 						
 						// Key name parsed now waiting for value
 					case ParsingStateWaitingValue:
 						// Value is object
-						//value += data.at(i);
-						type = CJSonElement::JsonTypeArray;
+						//value += data.at(*start);
+						type = CJsonElement::JsonTypeArray;
 						state = ParsingStateValue;
 						break;
 						
 						// Value parsing process currently
 					case ParsingStateValue:
-						value += data.at(i);
+						value += data.at(*start);
 						break;
 						
 						// Value parsed now waiting for list separator ','
 					default:
-						emitParsingError(data.at(i), line);
-						return CJSonDoc();
+						emitParsingError(data.at(*start), line);
+						return CJsonDoc();
 				}
 				break;
 
@@ -175,12 +187,12 @@ CJSonDoc CJson::parse(QByteArray data)
 					case ParsingStateKey:
 						if ((escape)&&(CJSON_SETTINGS_ALLOWESCAPEDKEY))
 						{
-							key += data.at(i);
+							key += data.at(*start);
 						}
 						else
 						{
-							emitParsingError(data.at(i), line);
-							return CJSonDoc();
+							emitParsingError(data.at(*start), line);
+							return CJsonDoc();
 						}
 						break;
 						
@@ -188,13 +200,18 @@ CJSonDoc CJson::parse(QByteArray data)
 					case ParsingStateValue:
 						if ((escape)&&(CJSON_SETTINGS_ALLOWESCAPEDKEY))
 						{
-							value += data.at(i);
+							value += data.at(*start);
 						}
 						else
 						{
 							state = ParsingWaitingList;
 							qDebug(tr("Key: %1 Value: %2 Type: %3").arg(
 									   key, value, QString::number(type)).toLatin1().constData());
+							ret.appendElement(new CJsonElement(
+												  key,
+												  QVariant::fromValue(value),
+												  CJsonElement::JsonTypeArray,
+												  this));
 							key.clear();
 							value.clear();
 						}
@@ -202,8 +219,8 @@ CJSonDoc CJson::parse(QByteArray data)
 						
 						// Value parsed now waiting for list separator ','
 					default:
-						emitParsingError(data.at(i), line);
-						return CJSonDoc();
+						emitParsingError(data.at(*start), line);
+						return CJsonDoc();
 				}
 				break;
 				
@@ -214,7 +231,7 @@ CJSonDoc CJson::parse(QByteArray data)
 					case ParsingStateKey:
 						if (escape)
 						{
-							key += data.at(i);
+							key += data.at(*start);
 						}
 						else
 							state = ParsingWaitingSeparatorValue;
@@ -225,28 +242,33 @@ CJSonDoc CJson::parse(QByteArray data)
 						break;
 
 					case ParsingStateWaitingValue:
-						type = CJSonElement::JsonTypeString;
+						type = CJsonElement::JsonTypeString;
 						state = ParsingStateValue;
 						break;
 
 					case ParsingStateValue:
 						if (escape)
 						{
-							value += data.at(i);
+							value += data.at(*start);
 						}
 						else
 						{
 							state = ParsingWaitingList;
 							qDebug(tr("Key: %1 Value: %2 Type: %3").arg(
 									   key, value, QString::number(type)).toLatin1().constData());
+							ret.appendElement(new CJsonElement(
+												  key,
+												  QVariant::fromValue(value),
+												  CJsonElement::JsonTypeString,
+												  this));
 							key.clear();
 							value.clear();
 						}
 						break;
 						
 					default:
-						emitParsingError(data.at(i), line);
-						return CJSonDoc();
+						emitParsingError(data.at(*start), line);
+						return CJsonDoc();
 				}
 				break;
 			
@@ -263,12 +285,12 @@ CJSonDoc CJson::parse(QByteArray data)
 					case ParsingStateKey:
 						if ((escape)&&(CJSON_SETTINGS_ALLOWESCAPEDKEY))
 						{
-							key += data.at(i);
+							key += data.at(*start);
 						}
 						else
 						{
-							emitParsingError(data.at(i), line);
-							return CJSonDoc();
+							emitParsingError(data.at(*start), line);
+							return CJsonDoc();
 						}
 						break;
 						
@@ -282,19 +304,19 @@ CJSonDoc CJson::parse(QByteArray data)
 					case ParsingStateValue:
 						if (escape)
 						{
-							value += data.at(i);
+							value += data.at(*start);
 						}
 						else
 						{
-							emitParsingError(data.at(i), line);
-							return CJSonDoc();
+							emitParsingError(data.at(*start), line);
+							return CJsonDoc();
 						}
 						break;
 					
 					// Value parsed now waiting for list separator ','
 					default:
-						emitParsingError(data.at(i), line);
-						return CJSonDoc();
+						emitParsingError(data.at(*start), line);
+						return CJsonDoc();
 						
 				}
 				break;
@@ -320,8 +342,8 @@ CJSonDoc CJson::parse(QByteArray data)
 						break;
 						
 					default:
-						emitParsingError(data.at(i), line);
-						return CJSonDoc();
+						emitParsingError(data.at(*start), line);
+						return CJsonDoc();
 				}
 
 				break;
@@ -331,11 +353,11 @@ CJSonDoc CJson::parse(QByteArray data)
 				switch (state)
 				{
 					case ParsingStateKey:
-						key += data.at(i);
+						key += data.at(*start);
 						break;
 						
 					case ParsingStateValue:
-						key += data.at(i);
+						key += data.at(*start);
 						break;
 						
 					default:
@@ -349,32 +371,36 @@ CJSonDoc CJson::parse(QByteArray data)
 				{
 					// Key name parsing currently
 					case ParsingStateKey:
-						key += data.at(i);
+						key += data.at(*start);
 						break;
 						
 					// Value parsing process currently
 					case ParsingStateValue:
-						value += data.at(i);
+						value += data.at(*start);
 						break;
 					
 					// Value parsed now waiting for list separator ','
 					default:
-						emitParsingError(data.at(i), line);
-						return CJSonDoc();
+						emitParsingError(data.at(*start), line);
+						return CJsonDoc();
 				}
 				break;
 
 		}
 
-		escape = data.at(i) == CJSON_RESERVED_ESCAPE;
+		escape = data.at(*start) == CJSON_RESERVED_ESCAPE;
+		(*start)++;
 	}
 	
 	return ret;
 }
 
-CJSonDoc CJson::parse(QString data)
+CJsonDoc CJson::parse(QString data)
 {
-	return parse(data.toLatin1());
+	int idx = 0;
+
+	return parse(data.toLatin1(),
+				 &idx);
 }
 
 CJson::CJson(QObject *parent) :

@@ -1,12 +1,17 @@
-#include "CJSonDoc.h"
+#include "CJsonDoc.h"
 
-CJSonDoc::CJSonDoc(QObject *parent) : QObject(parent)
+CJsonDoc::CJsonDoc(QObject *parent) : QObject(parent)
 {
 	
 }
 
-CJSonDoc::CJSonDoc(const CJSonDoc &other)
+CJsonDoc::CJsonDoc(const CJsonDoc &other)
 {
 	
+}
+
+void CJsonDoc::appendElement(CJsonElement *element)
+{
+	__elements.append(element);
 }
 
