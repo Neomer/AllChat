@@ -23,6 +23,10 @@ public:
 
 	void appendElement(CJsonElement *element);
 
+	CJsonElement * findElementByKey(QString key, bool recursively = true);
+
+	bool isEmpty() { return __elements.isEmpty(); }
+
 signals:
 
 public slots:

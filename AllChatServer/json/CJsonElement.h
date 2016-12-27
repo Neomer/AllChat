@@ -17,10 +17,16 @@ public:
 		JsonTypeObject
 	};
 	
-	explicit CJsonElement(QString key, QVariant value, JsonElementType type, QObject *parent = 0);
+	CJsonElement(QString key, QVariant value, JsonElementType type, QObject *parent = 0);
+	CJsonElement(QObject *parent = 0);
+	CJsonElement(const CJsonElement &other);
 
-	bool isValue() { return !isBranch(); }
-	bool isBranch();
+	bool isText()   { return type() == JsonTypeString; }
+	bool isArray()  { return type() == JsonTypeArray;  }
+	bool isNumber() { return type() == JsonTypeNumber; }
+	bool isObject() { return type() == JsonTypeObject; }
+
+	bool isValid()  { return (!key().isEmpty()) && (__valid); }
 
 	QString key() { return __key; }
 	QVariant value() { return __value; }
@@ -36,6 +42,7 @@ private:
 	QString __key;
 	QVariant __value;
 	JsonElementType __type;
+	bool __valid;
 };
 
 #endif // CJSONBELEMENT_H

@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QByteArray>
+#include <QFile>
+
 #include "CJsonDoc.h"
 
 #define CJSON_ESCAPE_SYMBOLS				"\r\n\t"
@@ -29,6 +31,7 @@ class CJson : public QObject
 public:
 	static CJson instance(QObject * parent = 0) { static CJson __inst(parent); return __inst; }
 
+	CJsonDoc fromFile(QString filename);
 	CJsonDoc parse(QByteArray data, int * start);
 	CJsonDoc parse(QString data);
 
