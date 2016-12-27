@@ -21,7 +21,8 @@ SOURCES += main.cpp \
     CRoomCollection.cpp \
     json/CJson.cpp \
     json/CJsonDoc.cpp \
-    json/CJsonElement.cpp
+    json/CJsonElement.cpp \
+    json/CJsonStreamParser.cpp
 
 HEADERS += \
     CChatClient.h \
@@ -38,7 +39,8 @@ HEADERS += \
     CRoomCollection.h \
     json/CJson.h \
     json/CJsonDoc.h \
-    json/CJsonElement.h
+    json/CJsonElement.h \
+    json/CJsonStreamParser.h
 
 CONFIG(unix): {
     LIBS += -L/usr/lib -lpq

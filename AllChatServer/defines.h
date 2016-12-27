@@ -7,6 +7,6 @@
 #define LENGTH_NICKNAME			40
 
 #define PROTOCOL_AUTHORIZATION_FAILED		0
-
+class CJsonDoc;
 
 #endif // DEFINES_H

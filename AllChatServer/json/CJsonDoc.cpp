@@ -12,25 +12,45 @@ CJsonDoc::CJsonDoc(const CJsonDoc &other)
 
 void CJsonDoc::appendElement(CJsonElement *element)
 {
-	__elements.append(element);
+
+	__elements.append(*element);
 }
 
-CJsonElement *CJsonDoc::findElementByKey(QString key, bool recursively)
+QList<CJsonElement> CJsonDoc::findElementsByKey(QString key, bool recursively)
 {
-	foreach (CJsonElement * element, this->__elements)
-	{
-		if (element->key() == key)
-		{
-			return element;
-		}
-		if ((element->isObject()) && (recursively))
-		{
-			CJsonElement * ret = element->value().value<CJsonDoc>().findElementByKey(key, recursively);
+	QList<CJsonElement> ret;
 
-			if (ret) return ret;
+	foreach (CJsonElement element, this->__elements)
+	{
+		if (element.key() == key)
+		{
+			ret.append(element);
+		}
+		if ((element.isObject()) && (recursively))
+		{
+			ret.append(element.value().value<CJsonDoc>().findElementsByKey(key, recursively));
 		}
 	}
 
-	return 0;
+	return ret;
+}
+
+CJsonElement CJsonDoc::findFirstElementByKey(QString key, bool recursively)
+{
+	foreach (CJsonElement element, this->__elements)
+	{
+		if (element.key() == key)
+		{
+			return element;
+		}
+		if ((element.isObject()) && (recursively))
+		{
+			CJsonElement ret = element.value().value<CJsonDoc>().findFirstElementByKey(key, recursively);
+
+			if (ret.isValid()) return ret;
+		}
+	}
+
+	return CJsonElement();
 }
 

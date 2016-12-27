@@ -6,10 +6,39 @@ CJsonElement::CJsonElement(QString key,
 						   QObject *parent) :
 	QObject(parent),
 	__key(key),
-	__value(value),
 	__type(type),
 	__valid(true)
 {
+	QStringList sl;
+
+	switch (type())
+	{
+		case JsonTypeArray:
+			sl = value.toString().split(',', QString::SkipEmptyParts);
+
+			QVector<QString> tmp;
+
+			foreach (QString pp, sl)
+			{
+				pp.trimmed();
+				tmp.append(pp);
+			}
+
+			break;
+
+		case JsonTypeString:
+			break;
+
+		case JsonTypeBool:
+			break;
+
+		case JsonTypeObject:
+			__value = value;
+			break;
+
+		case JsonTypeNumber:
+			break;
+	}
 }
 
 CJsonElement::CJsonElement(QObject *parent)
@@ -25,7 +54,10 @@ CJsonElement::CJsonElement(const CJsonElement &other)
 	__valid = other.__valid;
 }
 
-const CJsonElement &CJsonElement::operator [](QString key)
+void CJsonElement::operator =(const CJsonElement &other)
 {
-
+	__key = other.__key;
+	__type = other.__type;
+	__value = other.__value;
+	__valid = other.__valid;
 }

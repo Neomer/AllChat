@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QMap>
 #include <QVariant>
+#include "defines.h"
 #include "CJsonElement.h"
 
 class CJson;
@@ -18,21 +19,23 @@ public:
 	CJsonDoc(QObject *parent = 0);
 	CJsonDoc(const CJsonDoc &other);
 	
-	const CJsonElement& operator [] (QString key);
-	const CJsonElement& first() { return *(__elements.at(0)); }
+	CJsonElement first() { return __elements.at(0); }
 
 	void appendElement(CJsonElement *element);
 
-	CJsonElement * findElementByKey(QString key, bool recursively = true);
+	QList<CJsonElement> findElementsByKey(QString key, bool recursively = true);
+	CJsonElement findFirstElementByKey(QString key, bool recursively = true);
 
 	bool isEmpty() { return __elements.isEmpty(); }
+
+	CJsonElement operator [] (QString key) { return findFirstElementByKey(key); }
 
 signals:
 
 public slots:
 
 private:
-	QList<CJsonElement *> __elements;
+	QList<CJsonElement> __elements;
 
 };
 
