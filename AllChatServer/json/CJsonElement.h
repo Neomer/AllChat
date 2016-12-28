@@ -44,6 +44,7 @@ public:
 	QString toString()	{ return __value.toString(); }
 	int toInt()			{ return __value.toInt(); }
 	bool toBool()		{ return __value.toBool(); }
+	const char * toConstChar() { return __value.toString().toLatin1().constData(); }
 
 signals:
 
