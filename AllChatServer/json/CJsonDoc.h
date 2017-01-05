@@ -19,23 +19,20 @@ public:
 	CJsonDoc(QObject *parent = 0);
 	CJsonDoc(const CJsonDoc &other);
 	
-	CJsonElement first() { return __elements.at(0); }
+	const CJsonElement * root() { return __root; }
 
 	void appendElement(CJsonElement *element);
 
 	QList<CJsonElement> findElementsByKey(QString key, bool recursively = true);
 	CJsonElement findFirstElementByKey(QString key, bool recursively = true);
 
-	bool isEmpty() { return __elements.isEmpty(); }
+	bool isEmpty() { return root() == 0; }
 
 	CJsonElement operator [] (QString key) { return findFirstElementByKey(key); }
 
-signals:
-
-public slots:
-
 private:
 	QList<CJsonElement> __elements;
+	CJsonElement * __root;
 
 };
 

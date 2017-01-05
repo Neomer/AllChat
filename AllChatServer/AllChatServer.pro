@@ -22,7 +22,8 @@ SOURCES += main.cpp \
     json/CJson.cpp \
     json/CJsonDoc.cpp \
     json/CJsonElement.cpp \
-    json/CJsonStreamParser.cpp
+    json/CJsonStreamParser.cpp \
+    json/CJsonElementValue.cpp
 
 HEADERS += \
     CChatClient.h \
@@ -40,7 +41,8 @@ HEADERS += \
     json/CJson.h \
     json/CJsonDoc.h \
     json/CJsonElement.h \
-    json/CJsonStreamParser.h
+    json/CJsonStreamParser.h \
+    json/CJsonElementValue.h
 
 CONFIG(unix): {
     LIBS += -L/usr/lib -lpq

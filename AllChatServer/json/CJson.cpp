@@ -24,7 +24,7 @@ CJsonDoc CJson::parse(QByteArray data, int *start)
 	CJsonDoc ret(this);
 	ParsingState state = ParsingStateWaitingObject;
 	QString key, value;
-	CJsonElement::JsonElementType type;
+	CJsonElementValue::JsonValueType type;
 	int line = 1;
 	bool escape = false;
 
@@ -60,7 +60,7 @@ CJsonDoc CJson::parse(QByteArray data, int *start)
 		QVariant reqDoc;
 		switch (symbol)
 		{
-			// Begin of JSON object.
+			// Begin of JSON object '{'.
 			case CJSON_RESERVED_BEGINOBJECT:
 				switch (state)
 				{
@@ -92,13 +92,14 @@ CJsonDoc CJson::parse(QByteArray data, int *start)
 						// Value is object
 						state = ParsingStateValue;
 						// TODO recursive! <<=
-						type = CJsonElement::JsonTypeObject;
+						type = CJsonElementValue::JsonTypeObject;
 						reqDoc = QVariant::fromValue(parse(data, start));
 						ret.appendElement(
 									new CJsonElement(
 										key,
-										reqDoc,
-										CJsonElement::JsonTypeObject,
+										CJsonElementValue(reqDoc,
+															CJsonElementValue::JsonTypeObject,
+														  this),
 										this));
 						break;
 
@@ -122,7 +123,7 @@ CJsonDoc CJson::parse(QByteArray data, int *start)
 				}
 				break;
 
-			// End of JSON object.
+			// End of JSON object '}'.
 			case CJSON_RESERVED_ENDOBJECT:
 				switch (state)
 				{
@@ -171,7 +172,7 @@ CJsonDoc CJson::parse(QByteArray data, int *start)
 				}
 				break;
 			
-			// Begin of JSON array.
+			// Begin of JSON array '['.
 			case CJSON_RESERVED_BEGINARRAY:
 				switch (state)
 				{
@@ -192,7 +193,7 @@ CJsonDoc CJson::parse(QByteArray data, int *start)
 					case ParsingStateWaitingValue:
 						// Value is object
 						//value += symbol;
-						type = CJsonElement::JsonTypeArray;
+						type = CJsonElementValue::JsonTypeArray;
 						state = ParsingStateValue;
 						break;
 						
@@ -208,7 +209,7 @@ CJsonDoc CJson::parse(QByteArray data, int *start)
 				}
 				break;
 
-			// End of JSON array.
+			// End of JSON array ']' .
 			case CJSON_RESERVED_ENDARRAY:
 				switch (state)
 				{
@@ -238,8 +239,10 @@ CJsonDoc CJson::parse(QByteArray data, int *start)
 									   key, value, QString::number(type)).toLatin1().constData());
 							ret.appendElement(new CJsonElement(
 												  key,
-												  QVariant::fromValue(value),
-												  CJsonElement::JsonTypeArray,
+												  CJsonElementValue(
+																QVariant::fromValue(value),
+																CJsonElementValue::JsonTypeArray,
+																this),
 												  this));
 							key.clear();
 							value.clear();
@@ -271,7 +274,7 @@ CJsonDoc CJson::parse(QByteArray data, int *start)
 						break;
 
 					case ParsingStateWaitingValue:
-						type = CJsonElement::JsonTypeString;
+						type = CJsonElementValue::JsonTypeString;
 						state = ParsingStateValue;
 						break;
 
@@ -287,8 +290,10 @@ CJsonDoc CJson::parse(QByteArray data, int *start)
 									   key, value, QString::number(type)).toLatin1().constData());
 							ret.appendElement(new CJsonElement(
 												  key,
-												  QVariant::fromValue(value),
-												  CJsonElement::JsonTypeString,
+												  CJsonElementValue(
+																QVariant::fromValue(value),
+																CJsonElementValue::JsonTypeString,
+																this),
 												  this));
 							key.clear();
 							value.clear();

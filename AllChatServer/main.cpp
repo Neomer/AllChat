@@ -26,13 +26,6 @@ int main(int argc, char *argv[])
 	CJsonDoc doc = CJson::instance(&a).fromFile("json_test.json");
 	CJsonElement el = doc.findFirstElementByKey("key1", false);
 
-	if (el.isValid())
-		qDebug("Found element value: %s",
-			   el.toString().toStdString().c_str());
-
-	qDebug("Found element value: %s",
-		   doc["key 2"].toString().toStdString().c_str());
-
 
 //	QFile f("json_test.json");
 //	if (!f.open(QFile::ReadOnly))

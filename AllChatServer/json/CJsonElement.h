@@ -6,45 +6,34 @@
 #include <QMap>
 #include <QVector>
 #include "defines.h"
+#include "CJsonElementValue.h"
 
-
+class CJsonDoc;
 
 class CJsonElement : public QObject
 {
 	Q_OBJECT
+
+	friend class CJsonDoc;
+	friend class CJson;
+
 public:
-	enum JsonElementType
-	{
-		JsonTypeString,
-		JsonTypeArray,
-		JsonTypeNumber,
-		JsonTypeBool,
-		JsonTypeObject
-	};
 	
-	CJsonElement(QString key, QVariant value, JsonElementType type, QObject *parent = 0);
+	CJsonElement(QString key, CJsonElementValue value, QObject *parent = 0);
 	CJsonElement(QObject *parent = 0);
 	CJsonElement(const CJsonElement &other);
 
 	void operator = (const CJsonElement &other);
 
-	bool isText()   { return type() == JsonTypeString; }
-	bool isArray()  { return type() == JsonTypeArray;  }
-	bool isNumber() { return type() == JsonTypeNumber; }
-	bool isObject() { return type() == JsonTypeObject; }
-	bool isBool()   { return type() == JsonTypeBool;   }
 
-	bool isValid()  { return (!key().isEmpty()) && (__valid); }
-	bool isNull()   { return (key().isEmpty()) || (!__valid); }
+	bool isValid()  { return ((!key().isEmpty())||(value().type() == CJsonElementValue::JsonTypeRoot)) && (__valid); }
+	bool isNull()   { return ((key().isEmpty())&&(value().type() != CJsonElementValue::JsonTypeRoot)) || (!__valid); }
+	bool isLast()   { return __next == 0; }
 
 	QString key() { return __key; }
-	QVariant value() { return __value; }
-	JsonElementType type() { return __type; }
+	CJsonElementValue value() { return __value; }
 
-	QString toString()	{ return __value.toString(); }
-	int toInt()			{ return __value.toInt(); }
-	bool toBool()		{ return __value.toBool(); }
-	const char * toConstChar() { return __value.toString().toLatin1().constData(); }
+	const CJsonElement * next() { return __next; }
 
 signals:
 
@@ -52,9 +41,12 @@ public slots:
 
 private:
 	QString __key;
-	QVariant __value;
-	JsonElementType __type;
+	CJsonElementValue __value;
 	bool __valid;
+	CJsonElement * __next;
 };
+
+
+Q_DECLARE_METATYPE(CJsonElement)
 
 #endif // CJSONBELEMENT_H
